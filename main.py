@@ -107,15 +107,20 @@ def get_data(clients):
 def connect(client: Client, first_run: bool):
     if client.vid in tracked_users:
         if first_run:
-            pb.push_note(PB_TITLE, get_short_client(client) + " was already connected since " + client.connection_time.strftime("%H:%M:%S %b %d %Y", ))
+            if pb:
+                pb.push_note(PB_TITLE,
+                         get_short_client(client) + " was already connected since " + client.connection_time.strftime(
+                             "%H:%M:%S %b %d %Y", ))
         else:
-            pb.push_note(PB_TITLE, get_short_client(client) + " just connected at " + get_time())
+            if pb:
+                pb.push_note(PB_TITLE, get_short_client(client) + " just connected at " + get_time())
 
 
 @server.event("disconnect")
 def disconnect(client: Client):
     if client.vid in tracked_users:
-        print(client, "just disconnected at " + get_time())
+        if pb:
+            pb.push_note(PB_TITLE, get_short_client(client) + " just disconnected at " + get_time())
 
 
 @server.event("static")
@@ -123,7 +128,8 @@ def static(client: Pilot):
     if client.ground == False and client.vid in tracked_users:
         if client.vid not in air_static:
             print(client, "is air static at " + get_time())
-            pb.push_note(PB_TITLE, "Air Static : " + get_short_client(client) + " at " + get_time())
+            if pb:
+                pb.push_note(PB_TITLE, "Air Static : " + get_short_client(client) + " at " + get_time())
             air_static.append(client.vid)
 
 
@@ -133,7 +139,8 @@ def moving(client: Pilot):
         if client.vid in air_static:
             air_static.remove(client.vid)
             print(client, "is moving again at " + get_time())
-            pb.push_note(PB_TITLE, "Moving Again : " + get_short_client(client) + " at " + get_time())
+            if pb:
+                pb.push_note(PB_TITLE, "Moving Again : " + get_short_client(client) + " at " + get_time())
 
 
 def get_time():
@@ -159,4 +166,3 @@ if __name__ == "__main__":
         print("Closing at " + get_time())
         if pb:
             pb.push_note(PB_TITLE, "Closing at " + get_time())
-
