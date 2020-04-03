@@ -157,5 +157,6 @@ if __name__ == "__main__":
             pb.push_note(PB_TITLE, "Error : " + str(e))
     finally:
         print("Closing at " + get_time())
-        pb.push_note(PB_TITLE, "Closing at " + get_time())
+        if pb:
+            pb.push_note(PB_TITLE, "Closing at " + get_time())
 
