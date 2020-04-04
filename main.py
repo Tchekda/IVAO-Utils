@@ -128,7 +128,6 @@ def disconnect(client: Client):
 def static(client: Pilot):
     if client.ground == False and client.vid in tracked_users:
         if client.vid not in air_static:
-            print(client, "is air static at " + get_time())
             if pb:
                 pb.push_note(PB_TITLE, get_short_client(client) + " got air-static at " + get_time())
             air_static.append(client.vid)
@@ -138,9 +137,22 @@ def static(client: Pilot):
 def moving(client: Pilot):
     if client.vid in air_static:
         air_static.remove(client.vid)
-        print(client, "is moving again at " + get_time())
         if pb:
             pb.push_note(PB_TITLE, get_short_client(client) + " is moving again at " + get_time())
+
+
+@server.event("land")
+def land(client: Pilot):
+    if client.vid in tracked_users:
+        if pb:
+            pb.push_note(PB_TITLE, get_short_client(client) + " just landed at " + get_time())
+
+
+@server.event("takeoff")
+def land(client: Pilot):
+    if client.vid in tracked_users:
+        if pb:
+            pb.push_note(PB_TITLE, get_short_client(client) + " just takeoff at " + get_time())
 
 
 def get_time():
