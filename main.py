@@ -109,8 +109,9 @@ def connect(client: Client, first_run: bool):
         if first_run:
             if pb:
                 pb.push_note(PB_TITLE,
-                         get_short_client(client) + " was already connected since " + client.connection_time.strftime(
-                             "%H:%M:%S %b %d %Y", ))
+                             get_short_client(
+                                 client) + " was already connected since " + client.connection_time.strftime(
+                                 "%H:%M:%S %b %d %Y", ))
         else:
             if pb:
                 pb.push_note(PB_TITLE, get_short_client(client) + " just connected at " + get_time())
@@ -129,22 +130,21 @@ def static(client: Pilot):
         if client.vid not in air_static:
             print(client, "is air static at " + get_time())
             if pb:
-                pb.push_note(PB_TITLE, "Air Static : " + get_short_client(client) + " at " + get_time())
+                pb.push_note(PB_TITLE, get_short_client(client) + " got air-static at " + get_time())
             air_static.append(client.vid)
 
 
 @server.event("moving")
 def moving(client: Pilot):
-    if client.vid in tracked_users:
-        if client.vid in air_static:
-            air_static.remove(client.vid)
-            print(client, "is moving again at " + get_time())
-            if pb:
-                pb.push_note(PB_TITLE, "Moving Again : " + get_short_client(client) + " at " + get_time())
+    if client.vid in air_static:
+        air_static.remove(client.vid)
+        print(client, "is moving again at " + get_time())
+        if pb:
+            pb.push_note(PB_TITLE, get_short_client(client) + " is moving again at " + get_time())
 
 
 def get_time():
-    return datetime.datetime.now().strftime("%H:%M:%S %b %d %Y", )
+    return datetime.datetime.now().strftime("%H:%M:%S", )
 
 
 def get_short_client(client: Client):
@@ -155,7 +155,7 @@ if __name__ == "__main__":
     if 'API_KEY' in os.environ:
         pb = PushBullet(os.environ['API_KEY'])
         pb.delete_pushes()
-        pb.push_note(PB_TITLE, "Connected at " + get_time())
+        pb.push_note(PB_TITLE, "Connected at " + datetime.datetime.now().strftime("%H:%M:%S %b %d %Y", ))
     try:
         server.run_update_stream(delay=0.5)
     except Exception as e:
@@ -163,6 +163,6 @@ if __name__ == "__main__":
         if pb:
             pb.push_note(PB_TITLE, "Error : " + str(e))
     finally:
-        print("Closing at " + get_time())
+        print("Closing at " + datetime.datetime.now().strftime("%H:%M:%S %b %d %Y", ))
         if pb:
-            pb.push_note(PB_TITLE, "Closing at " + get_time())
+            pb.push_note(PB_TITLE, "Closing at " + datetime.datetime.now().strftime("%H:%M:%S %b %d %Y", ))
