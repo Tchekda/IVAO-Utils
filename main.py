@@ -40,7 +40,6 @@ def get_data(clients):
                                                                                           count['air'],
                                                                                           count['atc'], count['folme'])
 
-    print(data)
     if pb:
         for push in pb.get_pushes():
             text = push['body'].lower()
@@ -169,7 +168,11 @@ if __name__ == "__main__":
         pb.delete_pushes()
         pb.push_note(PB_TITLE, "Connected at " + datetime.datetime.now().strftime("%H:%M:%S %b %d %Y", ))
     try:
-        server.run_update_stream(delay=0.5)
+        print("Starting at " + datetime.datetime.now().strftime("%H:%M:%S %b %d %Y", ))
+        delay = None # Random delay between 3 - 5 minutes
+        if os.getenv("UPDATE_DELAY") is not None:
+            delay = float(os.getenv("UPDATE_DELAY"))
+        server.run_update_stream(delay=delay)
     except Exception as e:
         print("Error : " + str(e))
         if pb:
